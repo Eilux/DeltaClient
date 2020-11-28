@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.bodner.jack.deltaclient.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  ],
+  "client": [
+    "GUIMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

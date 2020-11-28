@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "deltaclient",
+  "version": "${version}",
+  "name": "DeltaClient",
+  "description": "For better gameplay",
+  "authors": [
+    "Eilux"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/deltaclient/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "dev.bodner.jack.deltaclient.client.DeltaclientClient"
+    ],
+    "main": [
+      "dev.bodner.jack.deltaclient.Deltaclient"
+    ]
+  },
+  "mixins": [
+    "deltaclient.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.10.7",
+    "fabric": "*",
+    "minecraft": "1.16.4"
+  }
+}
