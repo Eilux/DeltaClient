@@ -9,26 +9,14 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.data.dev.NbtProvider;
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.IntArrayTag;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
-import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
-import org.lwjgl.system.CallbackI;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -40,8 +28,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import static net.minecraft.client.gui.DrawableHelper.drawSprite;
 
 @Mixin(InGameHud.class)
 public abstract class GUIMixin extends DrawableHelper {
@@ -74,23 +60,11 @@ public abstract class GUIMixin extends DrawableHelper {
         TextRenderer textRenderer = this.client.textRenderer;
         Collection<StatusEffectInstance> statusCollection = this.client.player.getStatusEffects();
 
-//        int fireTicks = this.client.player.getFireTicks();
-//        CompoundTag tag = this.client.player.toTag(new CompoundTag());
-//        textRenderer.drawWithShadow(matrices,String.valueOf(tag.get("Fire")),this.scaledWidth/2F,6,0xffffffff);
-
         if (!this.client.options.debugEnabled) {
             int baseX = this.scaledWidth - 6;
             int baseY = 6;
             int offsetX = 0;
             int offsetY = 0;
-
-//            if(fireTicks>0){
-//                this.client.getTextureManager().bindTexture(new Identifier("deltaclient","textures/mob_effect/burning.png"));
-//                String burningString = ChatUtil.ticksToString(fireTicks);
-//                drawTexture(matrices, baseX - offsetX - 24, baseY + offsetY, 0, 0, 18, 18);
-//                textRenderer.drawWithShadow(matrices, burningString, baseX - offsetX - 24, baseY + offsetY + 20, 0xffffffff);
-//                offsetX += 30;
-//            }
 
             if (!statusCollection.isEmpty()) {
                 RenderSystem.enableBlend();
@@ -133,7 +107,7 @@ public abstract class GUIMixin extends DrawableHelper {
     public void render(MatrixStack matrices, float tickDelta, CallbackInfo ci) {
         if (!this.client.options.debugEnabled) {
             renderCords(matrices);
-            renderCompass(matrices);
+            renderNewCompass(matrices);
         }
         renderArmor(matrices);
     }
@@ -190,14 +164,59 @@ public abstract class GUIMixin extends DrawableHelper {
 
         this.itemRenderer.apply(this.client.getResourceManager());
     }
+    public void renderNewCompass(MatrixStack matrices){
+        this.client.getTextureManager().bindTexture(new Identifier("deltaclient","textures/gui/compass.png"));
+        TextRenderer textRenderer = this.client.textRenderer;
 
-    public void renderCompass(MatrixStack matrices) {
+        int yaw = ((int) this.client.player.getHeadYaw() % 360);
+        if (yaw < 0){
+            yaw = 360+yaw;
+        }
+        int start = ((int) (scaledWidth * (1.5 / 4F)));
+        int end = ((int)(scaledWidth * (2.5 / 4F)));
+        int width = end-start;
+        fill(matrices, start-1, 3, end+1, 12, 0x668c8c8c);
+        for (int i = (width / -2)-1; i <= width / 2; i++) {
+            int shiftedYaw = (yaw + i)%360;
+            if (shiftedYaw < 0){
+                shiftedYaw = shiftedYaw + 360;
+            }
+
+            if ((shiftedYaw) % 10 == 0) {
+                drawVerticalLine(matrices, (scaledWidth / 2) + i, 2, 13, 0x66dedede);
+            }
+            switch (shiftedYaw) {
+                case 0:
+                    drawTexture(matrices, scaledWidth/2 + i -2, 5, 6, 13, 5, 7);
+                    break;
+                case 180:
+                    drawTexture(matrices, scaledWidth/2 + i -2, 5, 0, 13, 5, 7);
+                    break;
+                case 270:
+                    drawTexture(matrices, scaledWidth/2 + i -2, 5, 12, 13, 5, 7);
+                    break;
+                case 90:
+                    drawTexture(matrices, scaledWidth/2 + i -2, 5, 18, 13, 5, 7);
+                    break;
+            }
+        }
+
+        for(int i = start; i<=end; i++){
+            drawTexture(matrices,i,2, 3, 0, 1, 13);
+        }
+        drawTexture(matrices, start-3, 2, 0, 0, 3, 13);
+        drawTexture(matrices, end, 2, 108, 0, 3, 13);
+        drawTexture(matrices, (scaledWidth/2)-1, 2, 54, 0, 3, 13);
+
+        textRenderer.drawWithShadow(matrices, yaw +"°", scaledWidth/2F - textRenderer.getWidth(String.valueOf(yaw))/2F,(int)(13 + textRenderer.fontHeight/2F), 0xFFFFFFFF);
+    }
+
+    public void renderOldCompass(MatrixStack matrices) {
         TextRenderer textRenderer = this.client.textRenderer;
         int yaw = ((int) this.client.player.getHeadYaw() % 360);
         if (yaw < 0){
             yaw = 360+yaw;
         }
-//        textRenderer.drawWithShadow(matrices,String.valueOf(this.client.player.getHeadYaw()),scaledWidth/2F,30,0xFFFFFFFF);
         int width = ((int) (scaledWidth * (2.5 / 4F))) - ((int) (scaledWidth * (1.5 / 4F)));
         fill(matrices, ((int) (scaledWidth * (1.5 / 4F))), 2, ((int) (scaledWidth * (2.5 / 4F))), 12, 0x668c8c8c);
         for (int i = width / -2; i <= width / 2; i++) {
@@ -220,26 +239,6 @@ public abstract class GUIMixin extends DrawableHelper {
                     break;
             }
         }
-//        for (int j = 0; (width / 2) + j >= 0; j--) {
-//            if ((yaw + j) % 10 == 0) {
-//                drawVerticalLine(matrices, (scaledWidth / 2) + j, 2, 12, 0x66dedede);
-//            }
-//            switch (yaw + j) {
-//                case 360:
-//                case 0:
-//                    textRenderer.draw(matrices, "s", scaledWidth / 2F + j - 3, 3, 0xFFFFFFFF);
-//                    break;
-//                case 180:
-//                    textRenderer.draw(matrices, "n", scaledWidth / 2F + j - 3, 3, 0xFFFFFFFF);
-//                    break;
-//                case 270:
-//                    textRenderer.draw(matrices, "e", scaledWidth / 2F + j - 3, 3, 0xFFFFFFFF);
-//                    break;
-//                case 90:
-//                    textRenderer.draw(matrices, "w", scaledWidth / 2F + j - 3, 3, 0xFFFFFFFF);
-//                    break;
-//            }
-//        }
 
         drawHorizontalLine(matrices, ((int) (scaledWidth * (1.5 / 4F))) + 1, ((int) (scaledWidth * (2.5 / 4F))) - 1, 2, 0xFFFFFFFF);
         drawHorizontalLine(matrices, ((int) (scaledWidth * (1.5 / 4F))) + 1, ((int) (scaledWidth * (2.5 / 4F))) - 1, 12, 0xFFFFFFFF);
