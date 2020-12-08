@@ -3,10 +3,10 @@
   "minVersion": "0.8",
   "package": "dev.bodner.jack.deltaclient.mixin",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [
-  ],
+  "mixins": [],
   "client": [
-    "GUIMixin"
+    "GUIMixin",
+    "BossBarMixn"
   ],
   "injectors": {
     "defaultRequire": 1

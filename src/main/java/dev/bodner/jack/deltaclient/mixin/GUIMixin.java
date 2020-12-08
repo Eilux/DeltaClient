@@ -45,12 +45,6 @@ public abstract class GUIMixin extends DrawableHelper {
     @Final
     private ItemRenderer itemRenderer;
 
-    @Shadow
-    protected abstract PlayerEntity getCameraPlayer();
-
-    @Shadow
-    private int ticks;
-
     /**
      * @author Eilux
      * @reason asdfjkl
