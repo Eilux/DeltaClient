@@ -168,6 +168,14 @@ public abstract class GUIMixin extends DrawableHelper {
         int start = ((int) (scaledWidth * (1.5 / 4F)));
         int end = ((int)(scaledWidth * (2.5 / 4F)));
         int width = end-start;
+
+        if (width>180){
+            int trim = Math.abs(180-width)/2;
+            start = start+trim;
+            end = end-trim;
+            width = end-start;
+        }
+
         fill(matrices, start-1, 3, end+1, 12, 0x668c8c8c);
         for (int i = (width / -2)-1; i <= width / 2; i++) {
             int shiftedYaw = (yaw + i)%360;

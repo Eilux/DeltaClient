@@ -9,14 +9,11 @@
   ],
   "contact": {},
   "license": "MIT",
-  "icon": "assets/deltaclient/icon.png",
+  "icon": "assets/deltaclient/textures/delta.png",
   "environment": "client",
   "entrypoints": {
     "client": [
-      "dev.bodner.jack.deltaclient.client.DeltaclientClient"
-    ],
-    "main": [
-      "dev.bodner.jack.deltaclient.Deltaclient"
+      "dev.bodner.jack.deltaclient.DeltaClient"
     ]
   },
   "mixins": [
