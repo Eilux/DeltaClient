@@ -18,11 +18,10 @@ public class Compass extends DrawableHelper {
     private int yaw;
     private boolean text;
 
+    private int testValue = findDegree(0,0);
+
     public Compass(){
-//        yaw = ((int) client.player.getHeadYaw() % 360);
-//        if (yaw < 0){
-//            yaw = 360+yaw;
-//        }
+
         text = true;
 
         start = ((int) (scaledWidth * (1.5 / 4F)));
@@ -56,6 +55,9 @@ public class Compass extends DrawableHelper {
             end = end-trim;
             width = end-start;
         }
+
+        //
+        testValue = findDegree(0,0);
     }
 
     public void draw(MatrixStack matrices, int verticalOffset){
@@ -73,6 +75,11 @@ public class Compass extends DrawableHelper {
             if ((shiftedYaw) % 10 == 0) {
                 drawVerticalLine(matrices, (scaledWidth / 2) + i, 2+verticalOffset, 13+verticalOffset, 0x66dedede);
             }
+            //TEST
+//            if (shiftedYaw == testValue){
+//                drawVerticalLine(matrices, (scaledWidth / 2) + i, 2+verticalOffset, 13+verticalOffset, 0xFF3434eb);
+//            }
+            //TEST
             switch (shiftedYaw) {
                 case 0:
                     drawTexture(matrices, scaledWidth/2 + i -2, 5+verticalOffset, 6, 13, 5, 7);
@@ -105,6 +112,9 @@ public class Compass extends DrawableHelper {
         this.update();
         TextRenderer textRenderer = this.client.textRenderer;
         textRenderer.drawWithShadow(matrices, yaw +"°", scaledWidth/2F - textRenderer.getWidth(String.valueOf(yaw))/2F,(int)(13 + textRenderer.fontHeight/2F)+verticalOffset, 0xFFFFFFFF);
+        //TEST
+//        textRenderer.drawWithShadow(matrices, testValue +"°", scaledWidth/2F - textRenderer.getWidth(String.valueOf(testValue))/2F,(int)(23 + textRenderer.fontHeight/2F)+verticalOffset, 0xFFFFFFFF);
+        //TEST
     }
 
     public int getStart() {
@@ -136,6 +146,43 @@ public class Compass extends DrawableHelper {
     public void renderText(boolean value){
         text = value;
     }
+
+    public int findDegree(double xPos, double zPos){
+        double[] cordA = {this.client.player.getPos().x, this.client.player.getPos().z};
+        double[] cordB = {xPos, zPos};
+
+        double x = cordB[0] - cordA[0];
+        double y = cordB[1] - cordA[1];
+
+        double degree = Math.toDegrees(Math.atan(y/x));
+
+        //Q II
+        if (x < 0 && y > 0){
+            degree += 180;
+        }
+
+        //Q III
+        if (x < 0 && y < 0){
+            degree += 180;
+        }
+
+        //Q IV
+        if (x > 0 && y < 0){
+            degree += 360;
+        }
+
+        degree -= 90;
+
+        degree %= 360;
+        if (degree < 0){
+            degree += 360;
+        }
+
+//        System.out.println(degree);
+
+        return (int)degree;
+    }
+
 
     @Deprecated
     public void renderOldCompass(MatrixStack matrices) {

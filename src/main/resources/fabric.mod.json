@@ -14,9 +14,6 @@
   "entrypoints": {
     "client": [
       "dev.bodner.jack.deltaclient.DeltaClient"
-    ],
-    "main": [
-      "dev.bodner.jack.deltaclient.DeltaClient"
     ]
   },
   "mixins": [
