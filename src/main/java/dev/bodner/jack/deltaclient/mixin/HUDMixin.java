@@ -92,7 +92,7 @@ public abstract class HUDMixin extends DrawableHelper {
 
     @Inject(
             method = "render",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/PlayerListHud")
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/scoreboard/Scoreboard;getObjectiveForSlot(I)Lnet/minecraft/scoreboard/ScoreboardObjective;", ordinal = 1)
     )
     public void render(MatrixStack matrices, float tickDelta, CallbackInfo ci) {
         if (coordinates == null){
